@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khalid Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2c5282;
+            --accent: #d97706;
+            --accent-light: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --success: #059669;
+            --danger: #dc2626;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(30,58,95,0.3);
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+        .logo-icon {
+            width: 42px; height: 42px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+        }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-links button {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-links button:hover, .nav-links button.active {
+            background: var(--accent);
+        }
+
+        .hero {
+            padding: 50px 0 60px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 10px; }
+        .hero p { font-size: 1.15rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        .instructor-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 12px 24px;
+            border-radius: 50px;
+            margin-top: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .instructor-avatar {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--accent);
+            border: 3px solid var(--accent-light);
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .instructor-card span { font-weight: 600; }
+        .instructor-card small { opacity: 0.8; font-size: 0.8rem; }
+
+        .section { display: none; padding: 40px 0; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title {
+            font-size: 1.8rem; font-weight: 700;
+            margin-bottom: 8px; color: var(--primary);
+        }
+        .section-subtitle { color: var(--text-light); margin-bottom: 30px; }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .quiz-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .quiz-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            border-color: var(--primary-light);
+        }
+        .quiz-card .quiz-icon {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 14px;
+        }
+        .quiz-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+        .quiz-card p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 14px; }
+        .quiz-meta {
+            display: flex; justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        .quiz-meta .badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .quiz-header {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .quiz-header h2 { color: var(--primary); margin-bottom: 8px; }
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .question-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+        .question-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .option:hover { border-color: var(--primary-light); background: #f1f5f9; }
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        .option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+        .option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+        .option-letter {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .option.selected .option-letter { background: var(--primary); color: white; }
+        .option.correct .option-letter { background: var(--success); color: white; }
+        .option.wrong .option-letter { background: var(--danger); color: white; }
+
+        .quiz-actions {
+            display: flex; justify-content: space-between;
+            margin-top: 24px;
+        }
+        .btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-light); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: var(--accent-light); }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+
+        .result-box {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .result-score {
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.2rem; font-weight: 800;
+        }
+        .result-score.pass { background: #d1fae5; color: var(--success); }
+        .result-score.fail { background: #fee2e2; color: var(--danger); }
+        .result-score span { font-size: 0.9rem; font-weight: 500; opacity: 0.7; }
+        .result-details { margin: 24px 0; text-align: left; }
+        .result-item {
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .result-item.correct { background: #d1fae5; color: #065f46; }
+        .result-item.wrong { background: #fee2e2; color: #991b1b; }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .stat-card h4 { font-size: 2rem; color: var(--primary); }
+        .stat-card p { color: var(--text-light); font-size: 0.9rem; }
+        .table-wrap {
+            background: var(--card);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 18px; text-align: left; font-size: 0.9rem; }
+        th { background: var(--primary); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: #f8fafc; }
+        tr:hover { background: #f1f5f9; }
+        .tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .tag-green { background: #d1fae5; color: #065f46; }
+        .tag-red { background: #fee2e2; color: #991b1b; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .question-builder {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 2px solid var(--border);
+        }
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px; width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: scaleIn 0.3s ease;
+        }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .login-box {
+            max-width: 400px;
+            margin: 60px auto;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .login-box h2 { margin-bottom: 8px; color: var(--primary); }
+        .login-box p { color: var(--text-light); margin-bottom: 24px; }
+
+        .name-entry {
+            max-width: 450px;
+            margin: 40px auto;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 36px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.8rem; }
+            .header-top { flex-direction: column; gap: 12px; }
+            .quiz-actions { flex-direction: column; gap: 10px; }
+            .quiz-actions .btn { width: 100%; }
+        }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); grid-column: 1 / -1; }
+        .empty-state h3 { color: var(--text); margin-bottom: 8px; }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+        .tab { padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--text-light); border: none; background: none; font-family: inherit; font-size: 0.9rem; }
+        .tab.active { background: var(--primary); color: white; }
+
+        .hidden { display: none !important; }
+
+        .option.disabled { cursor: default; }
+        .option.disabled:hover { border-color: var(--border); background: none; }
+        .option.correct:hover { border-color: var(--success); background: #d1fae5; }
+        .option.wrong:hover { border-color: var(--danger); background: #fee2e2; }
+        .explanation-box {
+            margin-top: 16px;
+            padding: 16px 18px;
+            border-radius: 12px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            font-size: 0.9rem;
+            color: var(--text);
+            animation: fadeIn 0.3s ease;
+        }
+        .explanation-box strong { color: var(--primary); }
+        .question-image {
+            width: 100%;
+            max-width: 420px;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 12px;
+            background: #f1f5f9;
+        }
+        .storage-banner {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+        .save-note { font-size: 0.78rem; color: var(--text-light); text-align: center; margin-top: 10px; }
+        .toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: white; padding: 10px 20px; border-radius: 10px;
+            font-size: 0.85rem; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <div class="logo">
+                <div class="logo-icon">&#9874;</div>
+                <span>Khalid Academy</span>
+            </div>
+            <div class="nav-links">
+                <button onclick="showSection('home')" id="nav-home" class="active">Home</button>
+                <button onclick="openStudentAuth()" id="nav-student">Student</button>
+                <button onclick="showSection('teacherLogin')" id="nav-teacher">Teacher</button>
+            </div>
+        </div>
+        <div class="hero">
+            <h1>Master Civil Engineering</h1>
+            <p>Test your knowledge with expertly crafted quizzes in structural analysis, geotechnics, fluids, materials, and surveying.</p>
+            <div class="instructor-card">
+                <div class="instructor-avatar">K</div>
+                <div>
+                    <span>Khalid</span><br>
+                    <small>Lead Instructor & CEO</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div id="storageBanner"></div>
+
+    <div class="section active" id="home">
+        <h2 class="section-title">Available Quizzes</h2>
+        <p class="section-subtitle">Choose a quiz below to start. Each quiz has 8 multiple-choice questions.</p>
+        <div class="quiz-grid" id="quizList"></div>
+    </div>
+
+    <div class="section" id="studentAuth">
+        <div class="name-entry">
+            <div class="tabs" style="margin-bottom: 20px;">
+                <button class="tab active" onclick="switchAuthTab('login')" id="authTab-login">Log In</button>
+                <button class="tab" onclick="switchAuthTab('signup')" id="authTab-signup">Sign Up</button>
+            </div>
+
+            <div id="authPanel-login">
+                <h2>Welcome Back</h2>
+                <p>Log in to take a quiz and see your past results.</p>
+                <div class="form-group" style="text-align:left; margin-top: 20px;">
+                    <label>Name</label>
+                    <input type="text" id="loginName" placeholder="e.g. Ahmed Hassan">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Your password">
+                </div>
+                <p id="loginError" style="color: var(--danger); font-size: 0.85rem; display:none; margin-bottom: 10px;"></p>
+                <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="loginBtn" onclick="studentLogin()">Log In</button>
+            </div>
+
+            <div id="authPanel-signup" class="hidden">
+                <h2>Create Your Account</h2>
+                <p>Sign up once — your name and password will identify your results.</p>
+                <div class="form-group" style="text-align:left; margin-top: 20px;">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="e.g. Ahmed Hassan">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" placeholder="Choose a password">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label>Confirm Password</label>
+                    <input type="password" id="signupPassword2" placeholder="Repeat password">
+                </div>
+                <p id="signupError" style="color: var(--danger); font-size: 0.85rem; display:none; margin-bottom: 10px;"></p>
+                <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="signupBtn" onclick="studentSignup()">Sign Up</button>
+            </div>
+
+            <button class="btn btn-secondary" style="width:100%; margin-top:10px;" onclick="showSection('home')">Cancel</button>
+        </div>
+    </div>
+
+    <div class="section" id="quiz">
+        <div class="quiz-header">
+            <h2 id="quizTitle">Quiz Title</h2>
+            <p id="quizProgressText">Question 1 of 8</p>
+            <div class="progress-bar"><div class="progress-fill" id="progressBar" style="width: 12.5%"></div></div>
+        </div>
+        <div id="questionContainer"></div>
+        <div class="quiz-actions">
+            <button class="btn btn-secondary" onclick="prevQuestion()" id="prevBtn">Previous</button>
+            <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <div class="section" id="results">
+        <div class="result-box">
+            <h2 style="color: var(--primary); margin-bottom: 8px;">Quiz Complete!</h2>
+            <p style="color: var(--text-light); margin-bottom: 20px;">Here is how you performed</p>
+            <div class="result-score pass" id="resultScore">
+                <span id="scorePercent">75%</span>
+                <span>Score</span>
+            </div>
+            <p id="resultMessage" style="font-size: 1.1rem; margin-bottom: 20px;">Great job!</p>
+            <div class="result-details" id="resultDetails"></div>
+            <div style="display:flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="showSection('home')">Back to Quizzes</button>
+                <button class="btn btn-accent" onclick="retakeQuiz()">Retake Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="teacherLogin">
+        <div class="login-box">
+            <h2>Teacher Access</h2>
+            <p>Enter the password to access the dashboard.</p>
+            <div class="form-group" style="text-align:left; margin-top: 20px;">
+                <label>Password</label>
+                <input type="password" id="teacherPasswordInput" placeholder="Enter password">
+            </div>
+            <p id="teacherLoginError" style="color: var(--danger); font-size: 0.85rem; display:none; margin-bottom: 10px;"></p>
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="teacherLoginBtn" onclick="loginTeacher()">Access Dashboard</button>
+            <button class="btn btn-secondary" style="width:100%; margin-top:10px;" onclick="showSection('home')">Back to Home</button>
+        </div>
+    </div>
+
+    <div class="section" id="teacherDashboard">
+        <h2 class="section-title">Teacher Dashboard</h2>
+        <p class="section-subtitle">Manage quizzes and view student performance.</p>
+
+        <div class="dashboard-stats">
+            <div class="stat-card"><h4 id="statQuizzes">0</h4><p>Total Quizzes</p></div>
+            <div class="stat-card"><h4 id="statStudents">0</h4><p>Students Tested</p></div>
+            <div class="stat-card"><h4 id="statAvg">0%</h4><p>Average Score</p></div>
+            <div class="stat-card"><h4 id="statAttempts">0</h4><p>Total Attempts</p></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('quizzes')" id="tab-quizzes">Quizzes</button>
+            <button class="tab" onclick="switchTab('results')" id="tab-results">Student Results</button>
+            <button class="tab" onclick="switchTab('account')" id="tab-account">Account</button>
+        </div>
+
+        <div id="panel-quizzes">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="color: var(--primary);">Your Quizzes</h3>
+                <button class="btn btn-primary" onclick="openQuizModal()">+ Create Quiz</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Quiz</th><th>Questions</th><th>Topic</th><th>Actions</th></tr></thead>
+                    <tbody id="quizTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="panel-results" class="hidden">
+            <h3 style="color: var(--primary); margin-bottom: 16px;">Student Results</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Student</th><th>Quiz</th><th>Score</th><th>Date</th></tr></thead>
+                    <tbody id="resultsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="panel-account" class="hidden">
+            <div class="login-box" style="margin: 0 0 0 0; max-width: 420px;">
+                <h2 style="text-align:left; font-size: 1.2rem;">Change Password</h2>
+                <p style="text-align:left; margin-bottom: 16px;">Update the password used to access this dashboard.</p>
+                <div class="form-group" style="text-align:left;">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPasswordInput" placeholder="Current password">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label>New Password</label>
+                    <input type="password" id="newPasswordInput" placeholder="New password">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="newPasswordInput2" placeholder="Repeat new password">
+                </div>
+                <p id="changePasswordMsg" style="font-size: 0.85rem; display:none; margin-bottom: 10px;"></p>
+                <button class="btn btn-primary" id="changePasswordBtn" onclick="changeTeacherPassword()">Update Password</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+            <button class="btn btn-secondary" onclick="logoutTeacher()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="quizModal">
+    <div class="modal" style="max-width: 700px;">
+        <h2 style="color: var(--primary); margin-bottom: 16px;" id="modalTitle">Create Quiz</h2>
+        <div class="form-group">
+            <label>Quiz Title</label>
+            <input type="text" id="modalQuizTitle" placeholder="e.g. Structural Analysis">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <input type="text" id="modalQuizDesc" placeholder="Short description...">
+        </div>
+        <div class="form-group">
+            <label>Icon Emoji</label>
+            <input type="text" id="modalQuizIcon" placeholder="e.g. 🏗️" maxlength="2">
+        </div>
+        <div id="modalQuestions"></div>
+        <button class="btn btn-secondary" onclick="addModalQuestion()" style="width:100%; margin-bottom: 16px;">+ Add Question</button>
+        <div style="display:flex; gap: 10px;">
+            <button class="btn btn-primary" style="flex:1;" id="saveQuizBtn" onclick="saveQuiz()">Save Quiz</button>
+            <button class="btn btn-secondary" style="flex:1;" onclick="closeQuizModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!--
+  ============================================================
+  FIREBASE SETUP — fill this in to make saving work once this
+  page is hosted outside of Claude (GitHub Pages, Firebase
+  Hosting, Netlify, etc). See the setup guide provided with
+  this file. Until you fill in real values below, the app runs
+  fine but nothing is saved between visits.
+  ============================================================
+-->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+</script>
+
+<script>
+const DEFAULT_QUIZZES = [
+    {
+        id: 1,
+        title: "Structural Analysis",
+        description: "Forces, moments, trusses, and beam analysis fundamentals.",
+        icon: "🏗️",
+        color: "#1e3a5f",
+        questions: [
+            { q: "What is the primary force that causes a beam to bend?", options: ["Axial force", "Shear force", "Bending moment", "Torsional force"], correct: 2, explanation: "Bending moment is the internal moment that curves the beam; shear affects it but doesn't itself cause bending.",
+              svg: `<svg viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg"><line x1="40" y1="90" x2="360" y2="90" stroke="#1e3a5f" stroke-width="6"/><polygon points="40,90 25,115 55,115" fill="#1e3a5f"/><polygon points="360,90 345,115 375,115" fill="#1e3a5f"/><line x1="200" y1="30" x2="200" y2="85" stroke="#d97706" stroke-width="4"/><text x="206" y="28" font-size="14" fill="#d97706" font-family="Inter,sans-serif">P</text><path d="M40 130 L200 105 L360 130 Z" fill="#2c5282" opacity="0.25"/><text x="150" y="120" font-size="11" fill="#1e3a5f" font-family="Inter,sans-serif">Bending moment diagram</text></svg>` },
+            { q: "In a simply supported beam with a central point load, where is the maximum bending moment?", options: ["At the supports", "At the center", "At one-third span", "Uniform throughout"], correct: 1, explanation: "The bending moment diagram peaks directly under the point load, which for a central load is midspan." },
+            { q: "A truss is statically determinate if it satisfies which equation?", options: ["m = 2j - 3", "m = j - 3", "m = 2j + 3", "m = j + 3"], correct: 0, explanation: "m = 2j - 3 relates members (m) and joints (j) for a plane truss to be exactly determinate." },
+            { q: "What does the method of joints analyze?", options: ["Forces in members by sections", "Forces at joints using equilibrium", "Deflection of beams", "Stress in columns"], correct: 1, explanation: "The method of joints applies equilibrium (ΣFx=0, ΣFy=0) at each pin joint to solve for member forces." },
+            { q: "The point in a beam where bending moment is zero is called:", options: ["Point of contraflexure", "Neutral axis", "Centroid", "Shear center"], correct: 0, explanation: "A point of contraflexure is where the bending moment changes sign, i.e. crosses zero." },
+            { q: "Which load type produces a parabolic bending moment diagram?", options: ["Point load", "Uniformly distributed load", "Moment load", "Triangular load"], correct: 1, explanation: "A UDL gives a linearly varying shear force, whose integral (the moment) is parabolic." },
+            { q: "In a cantilever beam, the maximum deflection occurs at:", options: ["The support", "Midspan", "The free end", "One-third from support"], correct: 2, explanation: "With one end fixed, deflection accumulates along the span and is greatest at the unsupported free end." },
+            { q: "The degree of static indeterminacy of a propped cantilever is:", options: ["0", "1", "2", "3"], correct: 1, explanation: "A propped cantilever has 4 reactions and 3 equilibrium equations, giving 1 degree of indeterminacy." }
+        ]
+    },
+    {
+        id: 2,
+        title: "Geotechnical Engineering",
+        description: "Soil mechanics, classification, compaction, and foundation basics.",
+        icon: "🪨",
+        color: "#92400e",
+        questions: [
+            { q: "Which soil type has the largest particle size?", options: ["Silt", "Clay", "Sand", "Gravel"], correct: 3, explanation: "By particle size, gravel > sand > silt > clay, with gravel particles larger than 4.75mm.",
+              svg: `<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="55" r="3" fill="#92400e"/><text x="35" y="95" font-size="11" fill="#1e293b" font-family="Inter,sans-serif">Clay</text><circle cx="160" cy="55" r="6" fill="#92400e"/><text x="135" y="95" font-size="11" fill="#1e293b" font-family="Inter,sans-serif">Silt</text><circle cx="260" cy="55" r="14" fill="#92400e"/><text x="235" y="95" font-size="11" fill="#1e293b" font-family="Inter,sans-serif">Sand</text><circle cx="350" cy="50" r="24" fill="#92400e"/><text x="322" y="95" font-size="11" fill="#1e293b" font-family="Inter,sans-serif">Gravel</text></svg>` },
+            { q: "The water content of soil is defined as the ratio of:", options: ["Weight of water to weight of solids", "Weight of water to total weight", "Volume of water to volume of solids", "Weight of solids to weight of water"], correct: 0, explanation: "Water content w = (weight of water) / (weight of dry solids), usually expressed as a percentage." },
+            { q: "Atterberg limits are used to classify:", options: ["Sands", "Gravels", "Fine-grained soils", "Organic soils"], correct: 2, explanation: "Liquid, plastic, and shrinkage limits describe consistency of fine-grained (clay/silt) soils, not coarse ones." },
+            { q: "The liquid limit is the water content at which soil:", options: ["Changes from solid to semi-solid", "Changes from plastic to liquid state", "Has maximum dry density", "Reaches optimum moisture"], correct: 1, explanation: "The liquid limit marks the boundary between the plastic and liquid states of the soil." },
+            { q: "Which test determines the in-situ density of soil?", options: ["Hydrometer test", "Sand replacement test", "Atterberg limit test", "Permeability test"], correct: 1, explanation: "The sand replacement (sand cone) test measures the volume of an excavated hole in the field to find in-situ density." },
+            { q: "The bearing capacity of soil refers to:", options: ["Ability to allow water flow", "Maximum load per unit area it can support", "Degree of compaction", "Plasticity index"], correct: 1, explanation: "Bearing capacity is the maximum pressure the soil can safely carry without shear failure or excessive settlement." },
+            { q: "Which foundation type is used for weak soils with heavy loads?", options: ["Strip footing", "Raft foundation", "Pad footing", "Isolated column"], correct: 1, explanation: "A raft (mat) foundation spreads heavy loads over the whole building footprint, suiting weak or variable soils." },
+            { q: "Coefficient of permeability is highest in:", options: ["Clay", "Silt", "Fine sand", "Gravel"], correct: 3, explanation: "Larger, well-connected voids in gravel let water pass far more easily than through fine-grained soils." }
+        ]
+    },
+    {
+        id: 3,
+        title: "Fluid Mechanics",
+        description: "Hydrostatics, Bernoulli, flow types, and pipe mechanics.",
+        icon: "💧",
+        color: "#0369a1",
+        questions: [
+            { q: "According to Pascal's law, pressure in a fluid at rest is:", options: ["Different in all directions", "Maximum vertically", "Same in all directions", "Zero at bottom"], correct: 2, explanation: "Pascal's law states pressure at a point in a static fluid acts equally in every direction." },
+            { q: "Bernoulli's equation is based on the principle of:", options: ["Conservation of mass", "Conservation of momentum", "Conservation of energy", "Newton's second law"], correct: 2, explanation: "Bernoulli's equation is an energy balance along a streamline for pressure, velocity, and elevation heads.",
+              svg: `<svg viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 30 L140 30 L180 55 L220 55 L260 30 L380 30 L380 70 L260 70 L220 45 L180 45 L140 70 L20 70 Z" fill="none" stroke="#0369a1" stroke-width="4"/><text x="150" y="18" font-size="11" fill="#0369a1" font-family="Inter,sans-serif">Throat: low pressure, high velocity</text></svg>` },
+            { q: "Reynolds number is used to determine:", options: ["Pipe friction", "Flow regime (laminar/turbulent)", "Hydrostatic pressure", "Discharge rate"], correct: 1, explanation: "Reynolds number compares inertial to viscous forces, indicating whether flow is laminar or turbulent." },
+            { q: "For laminar flow in a pipe, the Reynolds number is:", options: ["Greater than 4000", "Between 2000 and 4000", "Less than 2000", "Equal to 5000"], correct: 2, explanation: "Flow in a pipe is generally laminar when Re < 2000, transitional between 2000–4000, and turbulent above 4000." },
+            { q: "The continuity equation is based on:", options: ["Conservation of mass", "Conservation of energy", "Conservation of momentum", "Newton's law"], correct: 0, explanation: "Continuity (A₁V₁ = A₂V₂ for incompressible flow) simply states mass entering equals mass leaving." },
+            { q: "Viscosity is the property of a fluid that offers resistance to:", options: ["Compression", "Flow", "Evaporation", "Thermal expansion"], correct: 1, explanation: "Viscosity measures a fluid's internal resistance to shear, i.e. to flowing." },
+            { q: "The hydraulic gradient line represents the sum of:", options: ["Pressure head + datum head", "Velocity head + datum head", "Pressure head + velocity head", "All three heads"], correct: 0, explanation: "The HGL plots pressure head plus elevation (datum) head, sitting one velocity head below the energy grade line." },
+            { q: "A venturi meter is used to measure:", options: ["Viscosity", "Discharge/flow rate", "Pressure", "Temperature"], correct: 1, explanation: "A venturi meter infers flow rate from the pressure drop caused by the throat's reduced area." }
+        ]
+    },
+    {
+        id: 4,
+        title: "Construction Materials",
+        description: "Cement, concrete, steel, aggregates, and material testing.",
+        icon: "🧱",
+        color: "#7c2d12",
+        questions: [
+            { q: "The main constituent of Ordinary Portland Cement is:", options: ["Silica", "Lime", "Alumina", "Iron oxide"], correct: 1, explanation: "Lime (CaO) makes up roughly 60-65% of OPC by mass, more than any other oxide." },
+            { q: "Initial setting time of OPC should not be less than:", options: ["10 minutes", "30 minutes", "60 minutes", "24 hours"], correct: 1, explanation: "Standards require an initial setting time of at least 30 minutes, giving enough time to place and finish concrete." },
+            { q: "The water-cement ratio primarily affects:", options: ["Color of concrete", "Workability and strength", "Setting time only", "Aggregate size"], correct: 1, explanation: "A lower w/c ratio generally raises strength but reduces workability, and vice versa." },
+            { q: "Which aggregate size is classified as fine aggregate?", options: ["20mm", "10mm", "4.75mm and below", "40mm"], correct: 2, explanation: "Aggregate passing the 4.75mm sieve is classed as fine (e.g. sand); larger material is coarse aggregate." },
+            { q: "Slump test is used to measure:", options: ["Compressive strength", "Workability of concrete", "Density", "Permeability"], correct: 1, explanation: "The slump test gauges how workable/fluid fresh concrete is, not its hardened strength.",
+              svg: `<svg viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg"><polygon points="150,20 250,20 280,110 120,110" fill="none" stroke="#7c2d12" stroke-width="4"/><polygon points="200,45 235,105 165,105" fill="#7c2d12" opacity="0.3"/><text x="120" y="130" font-size="11" fill="#7c2d12" font-family="Inter,sans-serif">Slump cone — measures workability</text></svg>` },
+            { q: "The standard curing period for concrete cubes is:", options: ["3 days", "7 days", "14 days", "28 days"], correct: 3, explanation: "Concrete's characteristic compressive strength is conventionally reported at 28 days of curing." },
+            { q: "Mild steel contains carbon approximately:", options: ["Less than 0.15%", "0.15% to 0.3%", "0.3% to 0.6%", "Above 0.6%"], correct: 1, explanation: "Mild (low-carbon) steel typically has about 0.15-0.3% carbon, balancing strength and ductility." },
+            { q: "Which admixture is used to slow down the setting of concrete?", options: ["Accelerator", "Retarder", "Air entrainer", "Plasticizer"], correct: 1, explanation: "Retarders delay hydration, extending setting time — useful in hot weather or for long pours." }
+        ]
+    },
+    {
+        id: 5,
+        title: "Surveying",
+        description: "Leveling, theodolite, contouring, and measurement techniques.",
+        icon: "📐",
+        color: "#065f46",
+        questions: [
+            { q: "The process of determining the relative heights of points is called:", options: ["Contouring", "Leveling", "Traversing", "Triangulation"], correct: 1, explanation: "Leveling finds the difference in elevation between points using an instrument and a staff.",
+              svg: `<svg viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg"><line x1="60" y1="120" x2="340" y2="120" stroke="#065f46" stroke-width="3"/><line x1="200" y1="120" x2="200" y2="60" stroke="#065f46" stroke-width="4"/><circle cx="200" cy="50" r="12" fill="#065f46"/><rect x="330" y="30" width="8" height="90" fill="#065f46"/><text x="285" y="25" font-size="11" fill="#065f46" font-family="Inter,sans-serif">Staff</text><line x1="212" y1="55" x2="330" y2="55" stroke="#d97706" stroke-width="2" stroke-dasharray="4,3"/><text x="130" y="45" font-size="11" fill="#065f46" font-family="Inter,sans-serif">Line of sight</text></svg>` },
+            { q: "A dumpy level is primarily used for:", options: ["Measuring angles", "Determining elevations", "Measuring distances", "Plotting maps"], correct: 1, explanation: "A dumpy level provides a fixed horizontal line of sight for reading staff heights, i.e. determining elevations." },
+            { q: "The line of collimation should be parallel to:", options: ["Vertical axis", "Bubble tube axis", "Axis of telescope", "Horizontal axis"], correct: 1, explanation: "Proper adjustment requires the line of collimation to be parallel to the longitudinal axis of the bubble tube." },
+            { q: "Benchmark is a point of:", options: ["Unknown elevation", "Known elevation", "Maximum elevation", "Minimum elevation"], correct: 1, explanation: "A benchmark is a fixed reference point of known, established elevation used to start or check leveling." },
+            { q: "Contour interval depends on:", options: ["Scale of map only", "Nature of ground and scale", "Weather only", "Instrument type"], correct: 1, explanation: "Interval choice balances map scale with terrain: steep or detailed ground needs a different interval than flat ground." },
+            { q: "In leveling, a backsight is taken on:", options: ["A point of unknown elevation", "A point of known elevation", "The instrument itself", "The last station"], correct: 1, explanation: "A backsight is read on a point of known elevation to establish the instrument's height of collimation." },
+            { q: "The horizontal angle is measured using a:", options: ["Dumpy level", "Theodolite", "Compass", "Plane table"], correct: 1, explanation: "A theodolite measures both horizontal and vertical angles precisely, unlike a dumpy level (elevations only)." },
+            { q: "Closed contour lines with higher values inside represent:", options: ["A depression", "A hill", "A ridge", "A valley"], correct: 1, explanation: "When contour values increase toward the center of closed loops, the ground rises there — a hill." }
+        ]
+    }
+];
+
+let quizzes = [];
+let results = [];
+let sessionStudents = []; // fallback-only store, used when Firebase isn't configured
+let currentQuiz = null;
+let currentQuestion = 0;
+let answers = [];
+let selectedQuizId = null;
+let editingQuizId = null;
+let studentName = "";
+let currentStudent = null;
+
+const DEFAULT_TEACHER_PASSWORD = "civil123";
+let teacherPasswordHash = null;
+
+// Whether Firebase is configured and reachable. If the config placeholders
+// haven't been replaced, or Firestore can't be reached, we fall back to
+// in-memory data for the session instead of breaking the app.
+let db = null;
+let dbOK = false;
+let dbWarned = false;
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function warnStorageUnavailable(reason) {
+    if (dbWarned) return;
+    dbWarned = true;
+    let msg;
+    if (reason === 'unconfigured') {
+        msg = '⚠️ This copy isn\'t connected to a database yet, so quizzes, accounts, and results won\'t be saved ' +
+              'between visits. Add your Firebase config near the top of the file to enable saving — see the setup guide.';
+    } else {
+        msg = '⚠️ Couldn\'t reach the database, so changes in this session won\'t be saved. Check your internet ' +
+              'connection and Firebase setup, then reload.';
+    }
+    document.getElementById('storageBanner').innerHTML = '<div class="storage-banner">' + msg + '</div>';
+}
+
+async function hashPassword(pw) {
+    const enc = new TextEncoder().encode(pw);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function initFirebase() {
+    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+        warnStorageUnavailable('unconfigured');
+        return false;
+    }
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        return true;
+    } catch (e) {
+        console.error('Firebase init failed', e);
+        warnStorageUnavailable('error');
+        return false;
+    }
+}
+
+async function init() {
+    document.getElementById('quizList').innerHTML = '<div class="empty-state"><h3>Loading quizzes…</h3><p>Just a moment.</p></div>';
+
+    dbOK = initFirebase();
+
+    // --- Quizzes ---
+    if (dbOK) {
+        try {
+            const snap = await db.collection('quizzes').get();
+            if (snap.empty) {
+                quizzes = JSON.parse(JSON.stringify(DEFAULT_QUIZZES));
+                const batch = db.batch();
+                quizzes.forEach(q => batch.set(db.collection('quizzes').doc(String(q.id)), q));
+                await batch.commit();
+            } else {
+                quizzes = snap.docs.map(d => d.data()).sort((a, b) => a.id - b.id);
+            }
+        } catch (e) {
+            console.error('Failed to load quizzes', e);
+            dbOK = false;
+            warnStorageUnavailable('error');
+            quizzes = JSON.parse(JSON.stringify(DEFAULT_QUIZZES));
+        }
+    } else {
+        quizzes = JSON.parse(JSON.stringify(DEFAULT_QUIZZES));
+    }
+
+    // --- Results ---
+    if (dbOK) {
+        try {
+            const snap = await db.collection('results').orderBy('timestamp', 'desc').get();
+            results = snap.docs.map(d => d.data());
+        } catch (e) {
+            console.error('Failed to load results', e);
+            results = [];
+        }
+    } else {
+        results = [];
+    }
+
+    // --- Teacher password ---
+    if (dbOK) {
+        try {
+            const doc = await db.collection('config').doc('teacher').get();
+            if (doc.exists) {
+                teacherPasswordHash = doc.data().passwordHash;
+            } else {
+                teacherPasswordHash = await hashPassword(DEFAULT_TEACHER_PASSWORD);
+                await db.collection('config').doc('teacher').set({ passwordHash: teacherPasswordHash });
+            }
+        } catch (e) {
+            console.error('Failed to load teacher password', e);
+            teacherPasswordHash = await hashPassword(DEFAULT_TEACHER_PASSWORD);
+        }
+    } else {
+        teacherPasswordHash = await hashPassword(DEFAULT_TEACHER_PASSWORD);
+    }
+
+    renderQuizList();
+    renderStudentNav();
+}
+
+async function persistQuiz(quiz) {
+    if (!dbOK) return;
+    try {
+        await db.collection('quizzes').doc(String(quiz.id)).set(quiz);
+    } catch (e) {
+        console.error('Failed to save quiz', e);
+        dbOK = false;
+        warnStorageUnavailable('error');
+    }
+}
+
+async function deleteQuizDoc(id) {
+    if (!dbOK) return;
+    try {
+        await db.collection('quizzes').doc(String(id)).delete();
+    } catch (e) {
+        console.error('Failed to delete quiz', e);
+        dbOK = false;
+        warnStorageUnavailable('error');
+    }
+}
+
+async function persistResult(result) {
+    if (!dbOK) return;
+    try {
+        await db.collection('results').add({
+            ...result,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch (e) {
+        console.error('Failed to save result', e);
+        dbOK = false;
+        warnStorageUnavailable('error');
+    }
+}
+
+// Looks up a student account by name. Returns { username, passwordHash } or null.
+async function findStudent(name) {
+    const key = name.trim().toLowerCase();
+    if (dbOK) {
+        try {
+            const doc = await db.collection('students').doc(key).get();
+            return doc.exists ? doc.data() : null;
+        } catch (e) {
+            console.error('Failed to look up student', e);
+            dbOK = false;
+            warnStorageUnavailable('error');
+            return sessionStudents.find(s => s.username.toLowerCase() === key) || null;
+        }
+    }
+    return sessionStudents.find(s => s.username.toLowerCase() === key) || null;
+}
+
+async function persistStudent(record) {
+    const key = record.username.trim().toLowerCase();
+    if (dbOK) {
+        try {
+            await db.collection('students').doc(key).set(record);
+            return;
+        } catch (e) {
+            console.error('Failed to save student', e);
+            dbOK = false;
+            warnStorageUnavailable('error');
+        }
+    }
+    sessionStudents.push(record);
+}
+
+async function saveTeacherPassword() {
+    if (!dbOK) return false;
+    try {
+        await db.collection('config').doc('teacher').set({ passwordHash: teacherPasswordHash });
+        return true;
+    } catch (e) {
+        console.error('Failed to save teacher password', e);
+        dbOK = false;
+        warnStorageUnavailable('error');
+        return false;
+    }
+}
+
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+    if(id === 'home' || id === 'studentAuth' || id === 'quiz' || id === 'results') {
+        document.getElementById('nav-home').classList.add('active');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderQuizList() {
+    const container = document.getElementById('quizList');
+    if (!quizzes.length) {
+        container.innerHTML = '<div class="empty-state"><h3>No quizzes yet</h3><p>Check back soon, or ask your teacher to add one.</p></div>';
+        return;
+    }
+    container.innerHTML = quizzes.map(q => `
+        <div class="quiz-card" onclick="selectQuiz(${q.id})">
+            <div class="quiz-icon" style="background: ${q.color}20; color: ${q.color};">${q.icon}</div>
+            <h3>${q.title}</h3>
+            <p>${q.description}</p>
+            <div class="quiz-meta">
+                <span>${q.questions.length} questions</span>
+                <span class="badge">Start</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectQuiz(id) {
+    selectedQuizId = id;
+    if (currentStudent) {
+        startQuiz();
+    } else {
+        openStudentAuth();
+    }
+}
+
+function startQuiz() {
+    if (!currentStudent) { openStudentAuth(); return; }
+    studentName = currentStudent.username;
+    currentQuiz = quizzes.find(q => q.id === selectedQuizId);
+    currentQuestion = 0;
+    answers = new Array(currentQuiz.questions.length).fill(-1);
+    showSection('quiz');
+    renderQuestion();
+}
+
+function openStudentAuth() {
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('signupError').style.display = 'none';
+    document.getElementById('loginName').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('signupName').value = '';
+    document.getElementById('signupPassword').value = '';
+    document.getElementById('signupPassword2').value = '';
+    switchAuthTab('login');
+    showSection('studentAuth');
+}
+
+function switchAuthTab(tab) {
+    document.getElementById('authTab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('authTab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('authPanel-login').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('authPanel-signup').classList.toggle('hidden', tab !== 'signup');
+}
+
+async function studentSignup() {
+    const name = document.getElementById('signupName').value.trim();
+    const pw = document.getElementById('signupPassword').value;
+    const pw2 = document.getElementById('signupPassword2').value;
+    const errEl = document.getElementById('signupError');
+    errEl.style.display = 'none';
+
+    if (!name || !pw) { errEl.textContent = 'Enter a name and password.'; errEl.style.display = 'block'; return; }
+    if (pw.length < 4) { errEl.textContent = 'Password must be at least 4 characters.'; errEl.style.display = 'block'; return; }
+    if (pw !== pw2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('signupBtn');
+    btn.disabled = true; btn.textContent = 'Creating account…';
+
+    const existing = await findStudent(name);
+    if (existing) {
+        btn.disabled = false; btn.textContent = 'Sign Up';
+        errEl.textContent = 'An account with that name already exists — try logging in.'; errEl.style.display = 'block';
+        return;
+    }
+
+    const passwordHash = await hashPassword(pw);
+    await persistStudent({ username: name, passwordHash });
+    btn.disabled = false; btn.textContent = 'Sign Up';
+
+    currentStudent = { username: name };
+    renderStudentNav();
+    showToast('Account created — welcome, ' + name + '!');
+    if (selectedQuizId !== null) { startQuiz(); } else { showSection('home'); }
+}
+
+async function studentLogin() {
+    const name = document.getElementById('loginName').value.trim();
+    const pw = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    errEl.style.display = 'none';
+
+    if (!name || !pw) { errEl.textContent = 'Enter your name and password.'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.textContent = 'Logging in…';
+
+    const record = await findStudent(name);
+    if (!record) {
+        btn.disabled = false; btn.textContent = 'Log In';
+        errEl.textContent = 'No account found with that name. Try signing up instead.'; errEl.style.display = 'block';
+        return;
+    }
+
+    const hash = await hashPassword(pw);
+    btn.disabled = false; btn.textContent = 'Log In';
+
+    if (hash !== record.passwordHash) { errEl.textContent = 'Incorrect password.'; errEl.style.display = 'block'; return; }
+
+    currentStudent = { username: record.username };
+    renderStudentNav();
+    showToast('Welcome back, ' + record.username + '!');
+    if (selectedQuizId !== null) { startQuiz(); } else { showSection('home'); }
+}
+
+function studentLogout() {
+    currentStudent = null;
+    selectedQuizId = null;
+    renderStudentNav();
+    showSection('home');
+}
+
+function renderStudentNav() {
+    const navBtn = document.getElementById('nav-student');
+    if (currentStudent) {
+        navBtn.textContent = currentStudent.username + ' (Logout)';
+        navBtn.onclick = studentLogout;
+    } else {
+        navBtn.textContent = 'Student';
+        navBtn.onclick = openStudentAuth;
+    }
+}
+
+function renderQuestion() {
+    const q = currentQuiz.questions[currentQuestion];
+    const answered = answers[currentQuestion] !== -1;
+    document.getElementById('quizTitle').textContent = currentQuiz.title;
+    document.getElementById('quizProgressText').textContent = `Question ${currentQuestion + 1} of ${currentQuiz.questions.length}`;
+    document.getElementById('progressBar').style.width = `${((currentQuestion + 1) / currentQuiz.questions.length) * 100}%`;
+
+    document.getElementById('questionContainer').innerHTML = `
+        <div class="question-card">
+            <h3>Q${currentQuestion + 1}. ${q.q}</h3>
+            ${q.svg ? `<div class="question-image">${q.svg}</div>` : ''}
+            <div class="options">
+                ${q.options.map((opt, i) => {
+                    let cls = 'option';
+                    if (answered) {
+                        cls += ' disabled';
+                        if (i === q.correct) cls += ' correct';
+                        else if (i === answers[currentQuestion]) cls += ' wrong';
+                    } else if (answers[currentQuestion] === i) {
+                        cls += ' selected';
+                    }
+                    return `
+                    <div class="${cls}" onclick="${answered ? '' : `selectAnswer(${i})`}">
+                        <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+                        <span>${opt}</span>
+                        ${answered && i === q.correct ? '<span style="margin-left:auto; font-weight:700;">✓</span>' : ''}
+                        ${answered && i === answers[currentQuestion] && i !== q.correct ? '<span style="margin-left:auto; font-weight:700;">✗</span>' : ''}
+                    </div>`;
+                }).join('')}
+            </div>
+            ${answered ? `
+            <div class="explanation-box">
+                <strong>${answers[currentQuestion] === q.correct ? 'Correct! ' : 'Not quite — the correct answer is "' + q.options[q.correct] + '". '}</strong>
+                ${q.explanation || ''}
+            </div>` : ''}
+        </div>
+    `;
+
+    document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.textContent = currentQuestion === currentQuiz.questions.length - 1 ? 'Finish' : 'Next';
+    nextBtn.disabled = !answered;
+}
+
+function selectAnswer(idx) {
+    if (answers[currentQuestion] !== -1) return;
+    answers[currentQuestion] = idx;
+    renderQuestion();
+}
+
+function nextQuestion() {
+    if(answers[currentQuestion] === -1) { alert('Please select an answer'); return; }
+    if(currentQuestion < currentQuiz.questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+    } else {
+        finishQuiz();
+    }
+}
+
+function prevQuestion() {
+    if(currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+    }
+}
+
+function finishQuiz() {
+    let correct = 0;
+    currentQuiz.questions.forEach((q, i) => {
+        if(answers[i] === q.correct) correct++;
+    });
+    const percent = Math.round((correct / currentQuiz.questions.length) * 100);
+
+    const result = {
+        student: studentName,
+        quiz: currentQuiz.title,
+        score: percent,
+        correct: correct,
+        total: currentQuiz.questions.length,
+        date: new Date().toLocaleString()
+    };
+    results.unshift(result);
+    persistResult(result);
+
+    const scoreEl = document.getElementById('resultScore');
+    scoreEl.className = 'result-score ' + (percent >= 60 ? 'pass' : 'fail');
+    document.getElementById('scorePercent').textContent = percent + '%';
+    document.getElementById('resultMessage').textContent = percent >= 80 ? 'Excellent work, ' + studentName + '!' : percent >= 60 ? 'Good job, ' + studentName + '!' : 'Keep studying, ' + studentName + '!';
+
+    document.getElementById('resultDetails').innerHTML = currentQuiz.questions.map((q, i) => `
+        <div class="result-item ${answers[i] === q.correct ? 'correct' : 'wrong'}">
+            <span style="font-weight:700;">Q${i+1}.</span>
+            <span style="flex:1;">${q.q}</span>
+            <span style="font-weight:600;">${answers[i] === q.correct ? 'Correct' : 'Wrong'}</span>
+        </div>
+    `).join('');
+
+    showSection('results');
+}
+
+function retakeQuiz() {
+    answers = new Array(currentQuiz.questions.length).fill(-1);
+    currentQuestion = 0;
+    showSection('quiz');
+    renderQuestion();
+}
+
+async function loginTeacher() {
+    const pw = document.getElementById('teacherPasswordInput').value;
+    const errEl = document.getElementById('teacherLoginError');
+    errEl.style.display = 'none';
+    if (!pw) { errEl.textContent = 'Enter the password.'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('teacherLoginBtn');
+    btn.disabled = true; btn.textContent = 'Checking…';
+    const hash = await hashPassword(pw);
+    btn.disabled = false; btn.textContent = 'Access Dashboard';
+
+    if (hash === teacherPasswordHash) {
+        document.getElementById('teacherPasswordInput').value = '';
+        showSection('teacherDashboard');
+        renderTeacherDashboard();
+    } else {
+        errEl.textContent = 'Incorrect password.';
+        errEl.style.display = 'block';
+    }
+}
+
+async function changeTeacherPassword() {
+    const current = document.getElementById('currentPasswordInput').value;
+    const next = document.getElementById('newPasswordInput').value;
+    const next2 = document.getElementById('newPasswordInput2').value;
+    const msgEl = document.getElementById('changePasswordMsg');
+    msgEl.style.display = 'none';
+
+    if (!current || !next) { msgEl.style.color = 'var(--danger)'; msgEl.textContent = 'Fill in all fields.'; msgEl.style.display = 'block'; return; }
+    if (next.length < 4) { msgEl.style.color = 'var(--danger)'; msgEl.textContent = 'New password must be at least 4 characters.'; msgEl.style.display = 'block'; return; }
+    if (next !== next2) { msgEl.style.color = 'var(--danger)'; msgEl.textContent = 'New passwords do not match.'; msgEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('changePasswordBtn');
+    btn.disabled = true; btn.textContent = 'Updating…';
+    const currentHash = await hashPassword(current);
+    if (currentHash !== teacherPasswordHash) {
+        btn.disabled = false; btn.textContent = 'Update Password';
+        msgEl.style.color = 'var(--danger)'; msgEl.textContent = 'Current password is incorrect.'; msgEl.style.display = 'block';
+        return;
+    }
+
+    teacherPasswordHash = await hashPassword(next);
+    const saved = await saveTeacherPassword();
+    btn.disabled = false; btn.textContent = 'Update Password';
+
+    document.getElementById('currentPasswordInput').value = '';
+    document.getElementById('newPasswordInput').value = '';
+    document.getElementById('newPasswordInput2').value = '';
+
+    msgEl.style.color = 'var(--success)';
+    msgEl.textContent = saved ? 'Password updated.' : 'Password updated for this session (could not save permanently).';
+    msgEl.style.display = 'block';
+    showToast('Password updated');
+}
+
+function logoutTeacher() {
+    showSection('home');
+}
+
+function renderTeacherDashboard() {
+    document.getElementById('statQuizzes').textContent = quizzes.length;
+    const uniqueStudents = new Set(results.map(r => r.student)).size;
+    document.getElementById('statStudents').textContent = uniqueStudents;
+    const avg = results.length ? Math.round(results.reduce((a,b) => a + b.score, 0) / results.length) : 0;
+    document.getElementById('statAvg').textContent = avg + '%';
+    document.getElementById('statAttempts').textContent = results.length;
+
+    document.getElementById('quizTable').innerHTML = quizzes.map(q => `
+        <tr>
+            <td><strong>${q.icon} ${q.title}</strong></td>
+            <td>${q.questions.length}</td>
+            <td>${q.description.substring(0, 40)}...</td>
+            <td>
+                <button class="btn btn-secondary" style="padding:6px 14px; font-size:0.8rem;" onclick="editQuiz(${q.id})">Edit</button>
+                <button class="btn btn-danger" style="padding:6px 14px; font-size:0.8rem;" onclick="deleteQuiz(${q.id})">Delete</button>
+            </td>
+        </tr>
+    `).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">No quizzes yet</td></tr>';
+
+    document.getElementById('resultsTable').innerHTML = results.map(r => `
+        <tr>
+            <td>${r.student}</td>
+            <td>${r.quiz}</td>
+            <td><span class="tag ${r.score >= 60 ? 'tag-green' : 'tag-red'}">${r.score}% (${r.correct}/${r.total})</span></td>
+            <td>${r.date}</td>
+        </tr>
+    `).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">No results yet</td></tr>';
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('panel-quizzes').classList.toggle('hidden', tab !== 'quizzes');
+    document.getElementById('panel-results').classList.toggle('hidden', tab !== 'results');
+    document.getElementById('panel-account').classList.toggle('hidden', tab !== 'account');
+}
+
+function deleteQuiz(id) {
+    if(!confirm('Delete this quiz?')) return;
+    quizzes = quizzes.filter(q => q.id !== id);
+    deleteQuizDoc(id);
+    renderTeacherDashboard();
+    renderQuizList();
+}
+
+function openQuizModal() {
+    editingQuizId = null;
+    document.getElementById('modalTitle').textContent = 'Create Quiz';
+    document.getElementById('modalQuizTitle').value = '';
+    document.getElementById('modalQuizDesc').value = '';
+    document.getElementById('modalQuizIcon').value = '📝';
+    document.getElementById('modalQuestions').innerHTML = '';
+    addModalQuestion();
+    document.getElementById('quizModal').classList.add('active');
+}
+
+function editQuiz(id) {
+    const q = quizzes.find(quiz => quiz.id === id);
+    editingQuizId = id;
+    document.getElementById('modalTitle').textContent = 'Edit Quiz';
+    document.getElementById('modalQuizTitle').value = q.title;
+    document.getElementById('modalQuizDesc').value = q.description;
+    document.getElementById('modalQuizIcon').value = q.icon;
+    document.getElementById('modalQuestions').innerHTML = '';
+    q.questions.forEach((ques, idx) => {
+        addModalQuestion();
+        const containers = document.querySelectorAll('.question-builder');
+        const c = containers[containers.length - 1];
+        c.querySelector('.q-text').value = ques.q;
+        c.querySelectorAll('.q-opt').forEach((inp, i) => inp.value = ques.options[i]);
+        c.querySelector('.q-correct').value = ques.correct;
+        c.querySelector('.q-explanation').value = ques.explanation || '';
+    });
+    document.getElementById('quizModal').classList.add('active');
+}
+
+function addModalQuestion() {
+    const div = document.createElement('div');
+    div.className = 'question-builder';
+    div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--primary);">Question</strong>
+            <button onclick="this.closest('.question-builder').remove()" style="background:var(--danger); color:white; border:none; border-radius:6px; padding:4px 10px; cursor:pointer;">Remove</button>
+        </div>
+        <div class="form-group"><input type="text" class="q-text" placeholder="Enter question text"></div>
+        <div class="form-group"><input type="text" class="q-opt" placeholder="Option A"></div>
+        <div class="form-group"><input type="text" class="q-opt" placeholder="Option B"></div>
+        <div class="form-group"><input type="text" class="q-opt" placeholder="Option C"></div>
+        <div class="form-group"><input type="text" class="q-opt" placeholder="Option D"></div>
+        <div class="form-group">
+            <label>Correct Answer (0=A, 1=B, 2=C, 3=D)</label>
+            <select class="q-correct">
+                <option value="0">A</option>
+                <option value="1">B</option>
+                <option value="2">C</option>
+                <option value="3">D</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Explanation (shown after the student answers)</label>
+            <textarea class="q-explanation" placeholder="Brief explanation of why this is correct..."></textarea>
+        </div>
+    `;
+    document.getElementById('modalQuestions').appendChild(div);
+}
+
+function closeQuizModal() {
+    document.getElementById('quizModal').classList.remove('active');
+}
+
+async function saveQuiz() {
+    const title = document.getElementById('modalQuizTitle').value.trim();
+    const desc = document.getElementById('modalQuizDesc').value.trim();
+    const icon = document.getElementById('modalQuizIcon').value.trim() || '📝';
+    if(!title) { alert('Enter a quiz title'); return; }
+
+    const questions = [];
+    document.querySelectorAll('.question-builder').forEach(qb => {
+        const qText = qb.querySelector('.q-text').value.trim();
+        const opts = Array.from(qb.querySelectorAll('.q-opt')).map(i => i.value.trim());
+        const correct = parseInt(qb.querySelector('.q-correct').value);
+        const explanation = qb.querySelector('.q-explanation').value.trim();
+        if(qText && opts.every(o => o)) {
+            questions.push({ q: qText, options: opts, correct: correct, explanation: explanation });
+        }
+    });
+
+    if(questions.length === 0) { alert('Add at least one complete question'); return; }
+
+    let savedQuiz;
+    if(editingQuizId) {
+        const q = quizzes.find(quiz => quiz.id === editingQuizId);
+        q.title = title; q.description = desc; q.icon = icon; q.questions = questions;
+        savedQuiz = q;
+    } else {
+        const newId = quizzes.length ? Math.max(...quizzes.map(q => q.id)) + 1 : 1;
+        savedQuiz = { id: newId, title, description: desc, icon, color: '#1e3a5f', questions };
+        quizzes.push(savedQuiz);
+    }
+
+    const btn = document.getElementById('saveQuizBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    await persistQuiz(savedQuiz);
+    btn.disabled = false;
+    btn.textContent = 'Save Quiz';
+
+    renderQuizList();
+    renderTeacherDashboard();
+    closeQuizModal();
+    showToast('Quiz saved');
+}
+
+init();
+</script>
+
+</body>
+</html>
