@@ -4,36 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khalid Academy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #1e3a5f;
-            --primary-light: #2c5282;
-            --accent: #d97706;
-            --accent-light: #f59e0b;
-            --bg: #f8fafc;
+            /* Blueprint drafting palette */
+            --ink: #0F2A4A;
+            --blueprint: #163E68;
+            --blueprint-deep: #0B2440;
+            --paper: #FAFAF8;
+            --paper-line: rgba(15, 42, 74, 0.055);
+            --grid-line-strong: rgba(15, 42, 74, 0.09);
+            --safety: #E8590C;
+            --safety-light: #FF7A29;
             --card: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --success: #059669;
-            --danger: #dc2626;
-            --border: #e2e8f0;
+            --text: #16233A;
+            --text-light: #5B6B80;
+            --measure: #2F8F46;
+            --alert: #C62E2E;
+            --border: #DCE3EC;
+
+            /* Back-compat aliases used throughout existing CSS/markup */
+            --primary: var(--blueprint);
+            --primary-light: #2C5E96;
+            --accent: var(--safety);
+            --accent-light: var(--safety-light);
+            --bg: var(--paper);
+            --success: var(--measure);
+            --danger: var(--alert);
         }
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg);
+            background:
+                repeating-linear-gradient(0deg, var(--paper-line) 0, var(--paper-line) 1px, transparent 1px, transparent 32px),
+                repeating-linear-gradient(90deg, var(--paper-line) 0, var(--paper-line) 1px, transparent 1px, transparent 32px),
+                var(--paper);
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
         }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        body.dark {
+            --ink: #E7EDF6;
+            --paper: #0F1B2E;
+            --paper-line: rgba(231, 237, 246, 0.05);
+            --grid-line-strong: rgba(231, 237, 246, 0.08);
+            --card: #16233A;
+            --text: #E7EDF6;
+            --text-light: #93A4BD;
+            --border: #26364F;
+        }
+        body.dark .quiz-meta { border-top-color: var(--border); }
+        body.dark .stat-card, body.dark .table-wrap, body.dark .quiz-card,
+        body.dark .question-card, body.dark .quiz-header, body.dark .result-box,
+        body.dark .login-box, body.dark .name-entry, body.dark .modal,
+        body.dark .question-builder { background: var(--card); border-color: var(--border); }
+        body.dark tr:nth-child(even) { background: rgba(231,237,246,0.03); }
+        body.dark tr:hover { background: rgba(231,237,246,0.05); }
+        body.dark .form-group input,
+        body.dark .form-group textarea,
+        body.dark .form-group select { background: var(--card); border-color: var(--border); color: var(--text); }
+        body.dark .option { border-color: var(--border); }
+        body.dark .option:hover { background: rgba(231,237,246,0.04); }
+        body.dark .option.selected { background: rgba(22,62,104,0.35); }
+        body.dark .explanation-box { background: rgba(22,62,104,0.35); border-color: var(--border); }
+        body.dark .storage-banner { background: rgba(232,89,12,0.15); border-color: rgba(232,89,12,0.4); color: #FFB68A; }
+        #themeToggle { font-size: 1rem; padding: 8px 12px; }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
         header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            position: relative;
+            background:
+                repeating-linear-gradient(0deg, rgba(255,255,255,0.055) 0, rgba(255,255,255,0.055) 1px, transparent 1px, transparent 8px),
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.055) 0, rgba(255,255,255,0.055) 1px, transparent 1px, transparent 8px),
+                repeating-linear-gradient(0deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 1.5px, transparent 1.5px, transparent 40px),
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 1.5px, transparent 1.5px, transparent 40px),
+                linear-gradient(160deg, var(--blueprint) 0%, var(--blueprint-deep) 100%);
             color: white;
             padding: 0;
-            box-shadow: 0 4px 20px rgba(30,58,95,0.3);
+            overflow: hidden;
         }
         .header-top {
             display: flex;
@@ -45,68 +95,121 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.4rem;
-            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
         }
         .logo-icon {
             width: 42px; height: 42px;
             background: var(--accent);
-            border-radius: 10px;
+            border-radius: 4px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.3);
         }
         .nav-links { display: flex; gap: 10px; }
         .nav-links button {
-            background: rgba(255,255,255,0.15);
-            border: none;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
             color: white;
             padding: 8px 18px;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.02em;
             transition: all 0.2s;
         }
         .nav-links button:hover, .nav-links button.active {
             background: var(--accent);
+            border-color: var(--accent);
         }
 
         .hero {
-            padding: 50px 0 60px;
+            position: relative;
+            padding: 56px 0 0;
             text-align: center;
         }
-        .hero h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 10px; }
-        .hero p { font-size: 1.15rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
-        .instructor-card {
-            display: inline-flex;
+        .hero-eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            opacity: 0.65;
+            margin-bottom: 14px;
+        }
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 14px;
+        }
+        .hero p { font-size: 1.1rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+
+        /* Title block: real architectural-drawing convention, repurposed to
+           carry the actual course info (instructor, discipline, sheet count) */
+        .title-block {
+            margin: 36px auto 0;
+            max-width: 680px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-bottom: none;
+            background: rgba(11, 36, 64, 0.35);
+            backdrop-filter: blur(6px);
+        }
+        .title-block .tb-cell {
+            padding: 12px 14px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.25);
+            text-align: left;
+        }
+        .title-block .tb-cell:last-child { border-right: none; }
+        .title-block .tb-cell.wide { grid-column: span 2; }
+        .title-block .tb-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-bottom: 4px;
+        }
+        .title-block .tb-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        @media (max-width: 640px) {
+            .title-block { grid-template-columns: repeat(2, 1fr); }
+            .title-block .tb-cell.wide { grid-column: span 2; }
+        }
+        .tb-instructor {
+            display: flex;
             align-items: center;
-            gap: 15px;
-            background: rgba(255,255,255,0.15);
-            padding: 12px 24px;
-            border-radius: 50px;
-            margin-top: 25px;
-            backdrop-filter: blur(10px);
+            gap: 10px;
         }
         .instructor-avatar {
-            width: 50px; height: 50px;
-            border-radius: 50%;
+            width: 30px; height: 30px;
+            border-radius: 4px;
             display: flex; align-items: center; justify-content: center;
             background: var(--accent);
-            border: 3px solid var(--accent-light);
-            font-weight: 800;
-            font-size: 1.3rem;
+            font-weight: 700;
+            font-size: 0.85rem;
             color: white;
             flex-shrink: 0;
         }
-        .instructor-card span { font-weight: 600; }
-        .instructor-card small { opacity: 0.8; font-size: 0.8rem; }
 
         .section { display: none; padding: 40px 0; animation: fadeIn 0.4s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .section-title {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 1.8rem; font-weight: 700;
+            letter-spacing: -0.01em;
             margin-bottom: 8px; color: var(--primary);
         }
         .section-subtitle { color: var(--text-light); margin-bottom: 30px; }
@@ -117,41 +220,64 @@
             gap: 20px;
         }
         .quiz-card {
+            position: relative;
             background: var(--card);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border-radius: 2px;
+            padding: 26px 24px 22px;
+            box-shadow: 0 1px 3px rgba(15,42,74,0.08);
             border: 1px solid var(--border);
-            transition: all 0.3s;
+            transition: all 0.25s;
             cursor: pointer;
         }
         .quiz-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-            border-color: var(--primary-light);
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px rgba(15,42,74,0.14);
+            border-color: var(--blueprint);
+        }
+        .quiz-card:hover .reg-mark { border-color: var(--accent); }
+        .reg-mark {
+            position: absolute;
+            width: 10px; height: 10px;
+            border: 1.5px solid var(--border);
+            transition: border-color 0.25s;
+        }
+        .reg-mark.tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+        .reg-mark.tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+        .reg-mark.bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+        .reg-mark.br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+        .quiz-sheet-no {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--text-light);
+            margin-bottom: 12px;
         }
         .quiz-card .quiz-icon {
             width: 50px; height: 50px;
-            border-radius: 12px;
+            border-radius: 4px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem;
             margin-bottom: 14px;
         }
-        .quiz-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+        .quiz-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
         .quiz-card p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 14px; }
         .quiz-meta {
             display: flex; justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: var(--text-light);
+            letter-spacing: 0.02em;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
         }
         .quiz-meta .badge {
-            background: var(--primary);
+            background: var(--blueprint);
             color: white;
             padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            border-radius: 2px;
+            font-size: 0.72rem;
             font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.05em;
         }
 
         .quiz-header {
@@ -230,16 +356,17 @@
         }
         .btn {
             padding: 12px 28px;
-            border-radius: 10px;
+            border-radius: 3px;
             border: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
+            letter-spacing: 0.01em;
             cursor: pointer;
             transition: all 0.2s;
-            font-family: inherit;
+            font-family: 'Inter', sans-serif;
         }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary { background: var(--blueprint); color: white; }
         .btn-primary:hover { background: var(--primary-light); }
         .btn-accent { background: var(--accent); color: white; }
         .btn-accent:hover { background: var(--accent-light); }
@@ -445,18 +572,28 @@
             </div>
             <div class="nav-links">
                 <button onclick="showSection('home')" id="nav-home" class="active">Home</button>
+                <button onclick="showSection('myProgress'); renderProgress();" id="nav-progress" class="hidden">Progress</button>
                 <button onclick="openStudentAuth()" id="nav-student">Student</button>
                 <button onclick="showSection('teacherLogin')" id="nav-teacher">Teacher</button>
+                <button onclick="toggleTheme()" id="themeToggle" title="Toggle dark mode">🌙</button>
             </div>
         </div>
         <div class="hero">
+            <div class="hero-eyebrow">DISCIPLINE: CIVIL ENGINEERING &nbsp;·&nbsp; DRAWING SET: STUDENT REVIEW</div>
             <h1>Master Civil Engineering</h1>
             <p>Test your knowledge with expertly crafted quizzes in structural analysis, geotechnics, fluids, materials, and surveying.</p>
-            <div class="instructor-card">
-                <div class="instructor-avatar">K</div>
-                <div>
-                    <span>Khalid</span><br>
-                    <small>Lead Instructor & CEO</small>
+            <div class="title-block">
+                <div class="tb-cell wide">
+                    <div class="tb-label">Instructor</div>
+                    <div class="tb-value tb-instructor"><span class="instructor-avatar">K</span> Khalid — Lead Instructor & CEO</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="tb-label">Sheets</div>
+                    <div class="tb-value mono" id="sheetCount">—</div>
+                </div>
+                <div class="tb-cell">
+                    <div class="tb-label">Scale</div>
+                    <div class="tb-value mono">N.T.S.</div>
                 </div>
             </div>
         </div>
@@ -544,6 +681,20 @@
                 <button class="btn btn-primary" onclick="showSection('home')">Back to Quizzes</button>
                 <button class="btn btn-accent" onclick="retakeQuiz()">Retake Quiz</button>
             </div>
+        </div>
+    </div>
+
+    <div class="section" id="myProgress">
+        <h2 class="section-title">My Progress</h2>
+        <p class="section-subtitle">Every quiz you've completed, most recent first.</p>
+
+        <div class="dashboard-stats" id="progressStats"></div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Quiz</th><th>Score</th><th>Date</th></tr></thead>
+                <tbody id="progressTable"></tbody>
+            </table>
         </div>
     </div>
 
@@ -997,23 +1148,30 @@ function showSection(id) {
     document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
     if(id === 'home' || id === 'studentAuth' || id === 'quiz' || id === 'results') {
         document.getElementById('nav-home').classList.add('active');
+    } else if (id === 'myProgress') {
+        document.getElementById('nav-progress').classList.add('active');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderQuizList() {
+    const sheetEl = document.getElementById('sheetCount');
+    if (sheetEl) sheetEl.textContent = String(quizzes.length).padStart(2, '0') + ' / ' + String(quizzes.length).padStart(2, '0');
+
     const container = document.getElementById('quizList');
     if (!quizzes.length) {
         container.innerHTML = '<div class="empty-state"><h3>No quizzes yet</h3><p>Check back soon, or ask your teacher to add one.</p></div>';
         return;
     }
-    container.innerHTML = quizzes.map(q => `
+    container.innerHTML = quizzes.map((q, i) => `
         <div class="quiz-card" onclick="selectQuiz(${q.id})">
+            <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
+            <div class="quiz-sheet-no mono">SHEET ${String(i + 1).padStart(2, '0')}</div>
             <div class="quiz-icon" style="background: ${q.color}20; color: ${q.color};">${q.icon}</div>
             <h3>${q.title}</h3>
             <p>${q.description}</p>
             <div class="quiz-meta">
-                <span>${q.questions.length} questions</span>
+                <span class="mono">${q.questions.length} QUESTIONS</span>
                 <span class="badge">Start</span>
             </div>
         </div>
@@ -1127,13 +1285,40 @@ function studentLogout() {
 
 function renderStudentNav() {
     const navBtn = document.getElementById('nav-student');
+    const progressBtn = document.getElementById('nav-progress');
     if (currentStudent) {
         navBtn.textContent = currentStudent.username + ' (Logout)';
         navBtn.onclick = studentLogout;
+        progressBtn.classList.remove('hidden');
     } else {
         navBtn.textContent = 'Student';
         navBtn.onclick = openStudentAuth;
+        progressBtn.classList.add('hidden');
     }
+}
+
+function renderProgress() {
+    if (!currentStudent) { openStudentAuth(); return; }
+    const key = currentStudent.username.trim().toLowerCase();
+    const mine = results.filter(r => r.student.trim().toLowerCase() === key);
+
+    const attempts = mine.length;
+    const avg = attempts ? Math.round(mine.reduce((a, r) => a + r.score, 0) / attempts) : 0;
+    const best = attempts ? Math.max(...mine.map(r => r.score)) : 0;
+
+    document.getElementById('progressStats').innerHTML = `
+        <div class="stat-card"><h4>${attempts}</h4><p>Quizzes Taken</p></div>
+        <div class="stat-card"><h4>${avg}%</h4><p>Average Score</p></div>
+        <div class="stat-card"><h4>${best}%</h4><p>Best Score</p></div>
+    `;
+
+    document.getElementById('progressTable').innerHTML = mine.map(r => `
+        <tr>
+            <td>${r.quiz}</td>
+            <td><span class="tag ${r.score >= 60 ? 'tag-green' : 'tag-red'}">${r.score}% (${r.correct}/${r.total})</span></td>
+            <td>${r.date}</td>
+        </tr>
+    `).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-light);">You haven\'t taken any quizzes yet.</td></tr>';
 }
 
 function renderQuestion() {
@@ -1457,6 +1642,22 @@ async function saveQuiz() {
     showToast('Quiz saved');
 }
 
+function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem('khalidAcademyTheme'); } catch (e) { saved = null; }
+    if (saved === 'dark') {
+        document.body.classList.add('dark');
+        document.getElementById('themeToggle').textContent = '☀️';
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark');
+    document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+    try { localStorage.setItem('khalidAcademyTheme', isDark ? 'dark' : 'light'); } catch (e) { /* ignore */ }
+}
+
+initTheme();
 init();
 </script>
 
