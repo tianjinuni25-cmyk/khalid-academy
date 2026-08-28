@@ -214,6 +214,20 @@
         }
         .section-subtitle { color: var(--text-light); margin-bottom: 30px; }
 
+        .search-input {
+            width: 100%;
+            max-width: 420px;
+            padding: 11px 16px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            background: var(--card);
+            color: var(--text);
+        }
+        .search-input:focus { outline: none; border-color: var(--blueprint); }
+
         .quiz-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -288,6 +302,17 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
         .quiz-header h2 { color: var(--primary); margin-bottom: 8px; }
+        .quiz-timer {
+            background: var(--blueprint);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .quiz-timer.timer-warning { background: var(--alert); animation: pulseWarn 1s infinite; }
+        @keyframes pulseWarn { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .progress-bar {
             height: 8px;
             background: var(--border);
@@ -573,6 +598,7 @@
             <div class="nav-links">
                 <button onclick="showSection('home')" id="nav-home" class="active">Home</button>
                 <button onclick="showSection('myProgress'); renderProgress();" id="nav-progress" class="hidden">Progress</button>
+                <button onclick="showSection('leaderboard'); renderLeaderboard();" id="nav-leaderboard">Leaderboard</button>
                 <button onclick="openStudentAuth()" id="nav-student">Student</button>
                 <button onclick="showSection('teacherLogin')" id="nav-teacher">Teacher</button>
                 <button onclick="toggleTheme()" id="themeToggle" title="Toggle dark mode">🌙</button>
@@ -606,6 +632,7 @@
     <div class="section active" id="home">
         <h2 class="section-title">Available Quizzes</h2>
         <p class="section-subtitle">Choose a quiz below to start. Each quiz has 8 multiple-choice questions.</p>
+        <input type="text" id="quizSearch" class="search-input" placeholder="Search quizzes by topic or keyword..." oninput="renderQuizList()">
         <div class="quiz-grid" id="quizList"></div>
     </div>
 
@@ -656,7 +683,10 @@
 
     <div class="section" id="quiz">
         <div class="quiz-header">
-            <h2 id="quizTitle">Quiz Title</h2>
+            <div style="display:flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;">
+                <h2 id="quizTitle">Quiz Title</h2>
+                <div id="quizTimer" class="mono quiz-timer">⏱ --:--</div>
+            </div>
             <p id="quizProgressText">Question 1 of 8</p>
             <div class="progress-bar"><div class="progress-fill" id="progressBar" style="width: 12.5%"></div></div>
         </div>
@@ -694,6 +724,25 @@
             <table>
                 <thead><tr><th>Quiz</th><th>Score</th><th>Date</th></tr></thead>
                 <tbody id="progressTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section" id="leaderboard">
+        <h2 class="section-title">Leaderboard</h2>
+        <p class="section-subtitle">Best score per student. Retaking a quiz only counts your highest attempt.</p>
+
+        <div class="form-group" style="max-width: 320px;">
+            <label>Filter by quiz</label>
+            <select id="leaderboardFilter" onchange="renderLeaderboard()">
+                <option value="all">All quizzes</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>#</th><th>Student</th><th>Quiz</th><th>Best Score</th></tr></thead>
+                <tbody id="leaderboardTable"></tbody>
             </table>
         </div>
     </div>
@@ -934,6 +983,8 @@ let selectedQuizId = null;
 let editingQuizId = null;
 let studentName = "";
 let currentStudent = null;
+let quizTimerInterval = null;
+let quizTimeRemaining = 0;
 
 const DEFAULT_TEACHER_PASSWORD = "civil123";
 let teacherPasswordHash = null;
@@ -1146,6 +1197,7 @@ async function saveTeacherPassword() {
 }
 
 function showSection(id) {
+    if (id !== 'quiz') clearInterval(quizTimerInterval);
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
@@ -1153,6 +1205,8 @@ function showSection(id) {
         document.getElementById('nav-home').classList.add('active');
     } else if (id === 'myProgress') {
         document.getElementById('nav-progress').classList.add('active');
+    } else if (id === 'leaderboard') {
+        document.getElementById('nav-leaderboard').classList.add('active');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1160,13 +1214,28 @@ function showSection(id) {
 function renderQuizList() {
     const sheetEl = document.getElementById('sheetCount');
     if (sheetEl) sheetEl.textContent = String(quizzes.length).padStart(2, '0') + ' / ' + String(quizzes.length).padStart(2, '0');
+    populateLeaderboardFilter();
 
     const container = document.getElementById('quizList');
     if (!quizzes.length) {
         container.innerHTML = '<div class="empty-state"><h3>No quizzes yet</h3><p>Check back soon, or ask your teacher to add one.</p></div>';
         return;
     }
-    container.innerHTML = quizzes.map((q, i) => `
+
+    const searchEl = document.getElementById('quizSearch');
+    const query = (searchEl ? searchEl.value : '').trim().toLowerCase();
+    const filtered = query
+        ? quizzes.filter(q => q.title.toLowerCase().includes(query) || q.description.toLowerCase().includes(query))
+        : quizzes;
+
+    if (!filtered.length) {
+        container.innerHTML = `<div class="empty-state"><h3>No quizzes match "${query}"</h3><p>Try a different search term.</p></div>`;
+        return;
+    }
+
+    container.innerHTML = filtered.map((q) => {
+        const i = quizzes.indexOf(q);
+        return `
         <div class="quiz-card" onclick="selectQuiz(${q.id})">
             <span class="reg-mark tl"></span><span class="reg-mark tr"></span><span class="reg-mark bl"></span><span class="reg-mark br"></span>
             <div class="quiz-sheet-no mono">SHEET ${String(i + 1).padStart(2, '0')}</div>
@@ -1178,7 +1247,8 @@ function renderQuizList() {
                 <span class="badge">Start</span>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function selectQuiz(id) {
@@ -1190,6 +1260,31 @@ function selectQuiz(id) {
     }
 }
 
+function startQuizTimer() {
+    clearInterval(quizTimerInterval);
+    const secondsPerQuestion = 45;
+    quizTimeRemaining = currentQuiz.questions.length * secondsPerQuestion;
+    updateTimerDisplay();
+    quizTimerInterval = setInterval(() => {
+        quizTimeRemaining--;
+        updateTimerDisplay();
+        if (quizTimeRemaining <= 0) {
+            clearInterval(quizTimerInterval);
+            showToast("Time's up — submitting your quiz");
+            finishQuiz();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const el = document.getElementById('quizTimer');
+    if (!el) return;
+    const m = Math.floor(quizTimeRemaining / 60);
+    const s = quizTimeRemaining % 60;
+    el.textContent = `⏱ ${m}:${String(s).padStart(2, '0')}`;
+    el.classList.toggle('timer-warning', quizTimeRemaining <= 30 && quizTimeRemaining > 0);
+}
+
 function startQuiz() {
     if (!currentStudent) { openStudentAuth(); return; }
     studentName = currentStudent.username;
@@ -1198,6 +1293,7 @@ function startQuiz() {
     answers = new Array(currentQuiz.questions.length).fill(-1);
     showSection('quiz');
     renderQuestion();
+    startQuizTimer();
 }
 
 function openStudentAuth() {
@@ -1324,6 +1420,42 @@ function renderProgress() {
     `).join('') || '<tr><td colspan="3" style="text-align:center; color:var(--text-light);">You haven\'t taken any quizzes yet.</td></tr>';
 }
 
+function populateLeaderboardFilter() {
+    const select = document.getElementById('leaderboardFilter');
+    if (!select) return;
+    const current = select.value;
+    select.innerHTML = '<option value="all">All quizzes</option>' +
+        quizzes.map(q => `<option value="${q.title.replace(/"/g, '&quot;')}">${q.title}</option>`).join('');
+    if ([...select.options].some(o => o.value === current)) select.value = current;
+}
+
+function renderLeaderboard() {
+    const select = document.getElementById('leaderboardFilter');
+    const filterQuiz = select ? select.value : 'all';
+
+    const pool = filterQuiz === 'all' ? results : results.filter(r => r.quiz === filterQuiz);
+
+    // Keep only each student's best attempt per quiz.
+    const bestByKey = new Map();
+    pool.forEach(r => {
+        const key = r.student.trim().toLowerCase() + '::' + r.quiz;
+        const existing = bestByKey.get(key);
+        if (!existing || r.score > existing.score) bestByKey.set(key, r);
+    });
+
+    const ranked = [...bestByKey.values()].sort((a, b) => b.score - a.score).slice(0, 20);
+    const myKey = currentStudent ? currentStudent.username.trim().toLowerCase() : null;
+
+    document.getElementById('leaderboardTable').innerHTML = ranked.map((r, i) => `
+        <tr style="${myKey && r.student.trim().toLowerCase() === myKey ? 'background: rgba(232,89,12,0.08); font-weight: 600;' : ''}">
+            <td class="mono">${i + 1}</td>
+            <td>${r.student}</td>
+            <td>${r.quiz}</td>
+            <td><span class="tag ${r.score >= 60 ? 'tag-green' : 'tag-red'}">${r.score}%</span></td>
+        </tr>
+    `).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-light);">No results yet — be the first to take a quiz.</td></tr>';
+}
+
 function renderQuestion() {
     const q = currentQuiz.questions[currentQuestion];
     const answered = answers[currentQuestion] !== -1;
@@ -1392,6 +1524,7 @@ function prevQuestion() {
 }
 
 function finishQuiz() {
+    clearInterval(quizTimerInterval);
     let correct = 0;
     currentQuiz.questions.forEach((q, i) => {
         if(answers[i] === q.correct) correct++;
@@ -1418,7 +1551,7 @@ function finishQuiz() {
         <div class="result-item ${answers[i] === q.correct ? 'correct' : 'wrong'}">
             <span style="font-weight:700;">Q${i+1}.</span>
             <span style="flex:1;">${q.q}</span>
-            <span style="font-weight:600;">${answers[i] === q.correct ? 'Correct' : 'Wrong'}</span>
+            <span style="font-weight:600;">${answers[i] === -1 ? 'Not answered' : (answers[i] === q.correct ? 'Correct' : 'Wrong')}</span>
         </div>
     `).join('');
 
@@ -1430,6 +1563,7 @@ function retakeQuiz() {
     currentQuestion = 0;
     showSection('quiz');
     renderQuestion();
+    startQuizTimer();
 }
 
 async function loginTeacher() {
@@ -1690,4 +1824,3 @@ init();
 
 </body>
 </html>
-
