@@ -663,16 +663,16 @@
   fine but nothing is saved between visits.
   ============================================================
 -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
 <script>
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyC0Fkk2NUySJq9BFHiJ_Iaq0fwt-kfsgUM",
+        authDomain: "khalid-academy.firebaseapp.com",
+        projectId: "khalid-academy",
+        storageBucket: "khalid-academy.firebasestorage.app",
+        messagingSenderId: "55742442234",
+        appId: "1:55742442234:web:13063d593131cfffbef743"
     };
 </script>
 
@@ -818,82 +818,96 @@ async function hashPassword(pw) {
     return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-function initFirebase() {
-    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-        warnStorageUnavailable('unconfigured');
-        return false;
+async function waitForFirebaseSDK(timeoutMs) {
+    const start = Date.now();
+    while (typeof firebase === 'undefined') {
+        if (Date.now() - start > timeoutMs) return false;
+        await new Promise(r => setTimeout(r, 100));
     }
-    try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        return true;
-    } catch (e) {
-        console.error('Firebase init failed', e);
-        warnStorageUnavailable('error');
-        return false;
-    }
+    return true;
 }
 
 async function init() {
-    document.getElementById('quizList').innerHTML = '<div class="empty-state"><h3>Loading quizzes…</h3><p>Just a moment.</p></div>';
+    // --- Phase 1: render immediately from local data. No network calls here,
+    // so the page never sits stuck "loading" even if Firebase/Google servers
+    // are slow or unreachable (a common issue on some networks/regions). ---
+    quizzes = JSON.parse(JSON.stringify(DEFAULT_QUIZZES));
+    results = [];
+    teacherPasswordHash = await hashPassword(DEFAULT_TEACHER_PASSWORD);
+    renderQuizList();
+    renderStudentNav();
 
-    dbOK = initFirebase();
+    // --- Phase 2: try to connect to Firebase in the background. If it's not
+    // configured, or doesn't respond within a few seconds, we just keep
+    // running on local data and show a banner instead of hanging. ---
+    connectFirebase();
+}
+
+async function connectFirebase() {
+    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+        warnStorageUnavailable('unconfigured');
+        return;
+    }
+
+    const sdkReady = await waitForFirebaseSDK(6000);
+    if (!sdkReady) {
+        console.error('Firebase SDK did not load in time');
+        warnStorageUnavailable('error');
+        return;
+    }
+
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        dbOK = true;
+    } catch (e) {
+        console.error('Firebase init failed', e);
+        warnStorageUnavailable('error');
+        return;
+    }
 
     // --- Quizzes ---
-    if (dbOK) {
-        try {
-            const snap = await db.collection('quizzes').get();
-            if (snap.empty) {
-                quizzes = JSON.parse(JSON.stringify(DEFAULT_QUIZZES));
-                const batch = db.batch();
-                quizzes.forEach(q => batch.set(db.collection('quizzes').doc(String(q.id)), q));
-                await batch.commit();
-            } else {
-                quizzes = snap.docs.map(d => d.data()).sort((a, b) => a.id - b.id);
-            }
-        } catch (e) {
-            console.error('Failed to load quizzes', e);
-            dbOK = false;
-            warnStorageUnavailable('error');
-            quizzes = JSON.parse(JSON.stringify(DEFAULT_QUIZZES));
+    try {
+        const snap = await db.collection('quizzes').get();
+        if (snap.empty) {
+            const batch = db.batch();
+            quizzes.forEach(q => batch.set(db.collection('quizzes').doc(String(q.id)), q));
+            await batch.commit();
+        } else {
+            quizzes = snap.docs.map(d => d.data()).sort((a, b) => a.id - b.id);
         }
-    } else {
-        quizzes = JSON.parse(JSON.stringify(DEFAULT_QUIZZES));
+    } catch (e) {
+        console.error('Failed to load quizzes', e);
+        dbOK = false;
+        warnStorageUnavailable('error');
+        renderQuizList();
+        return;
     }
 
     // --- Results ---
-    if (dbOK) {
-        try {
-            const snap = await db.collection('results').orderBy('timestamp', 'desc').get();
-            results = snap.docs.map(d => d.data());
-        } catch (e) {
-            console.error('Failed to load results', e);
-            results = [];
-        }
-    } else {
-        results = [];
+    try {
+        const snap = await db.collection('results').orderBy('timestamp', 'desc').get();
+        results = snap.docs.map(d => d.data());
+    } catch (e) {
+        console.error('Failed to load results', e);
     }
 
     // --- Teacher password ---
-    if (dbOK) {
-        try {
-            const doc = await db.collection('config').doc('teacher').get();
-            if (doc.exists) {
-                teacherPasswordHash = doc.data().passwordHash;
-            } else {
-                teacherPasswordHash = await hashPassword(DEFAULT_TEACHER_PASSWORD);
-                await db.collection('config').doc('teacher').set({ passwordHash: teacherPasswordHash });
-            }
-        } catch (e) {
-            console.error('Failed to load teacher password', e);
-            teacherPasswordHash = await hashPassword(DEFAULT_TEACHER_PASSWORD);
+    try {
+        const doc = await db.collection('config').doc('teacher').get();
+        if (doc.exists) {
+            teacherPasswordHash = doc.data().passwordHash;
+        } else {
+            await db.collection('config').doc('teacher').set({ passwordHash: teacherPasswordHash });
         }
-    } else {
-        teacherPasswordHash = await hashPassword(DEFAULT_TEACHER_PASSWORD);
+    } catch (e) {
+        console.error('Failed to load teacher password', e);
     }
 
     renderQuizList();
-    renderStudentNav();
+    if (document.getElementById('teacherDashboard').classList.contains('active')) {
+        renderTeacherDashboard();
+    }
 }
 
 async function persistQuiz(quiz) {
