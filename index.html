@@ -743,7 +743,10 @@
         </div>
 
         <div id="panel-results" class="hidden">
-            <h3 style="color: var(--primary); margin-bottom: 16px;">Student Results</h3>
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="color: var(--primary);">Student Results</h3>
+                <button class="btn btn-secondary" onclick="exportResultsCSV()">⬇ Export CSV</button>
+            </div>
             <div class="table-wrap">
                 <table>
                     <thead><tr><th>Student</th><th>Quiz</th><th>Score</th><th>Date</th></tr></thead>
@@ -1488,6 +1491,30 @@ function logoutTeacher() {
     showSection('home');
 }
 
+function exportResultsCSV() {
+    if (!results.length) { showToast('No results to export yet'); return; }
+
+    const escapeCsv = (val) => {
+        const s = String(val);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+
+    const header = ['Student', 'Quiz', 'Score (%)', 'Correct', 'Total', 'Date'];
+    const rows = results.map(r => [r.student, r.quiz, r.score, r.correct, r.total, r.date]);
+    const csv = [header, ...rows].map(row => row.map(escapeCsv).join(',')).join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = `khalid-academy-results-${stamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
 function renderTeacherDashboard() {
     document.getElementById('statQuizzes').textContent = quizzes.length;
     const uniqueStudents = new Set(results.map(r => r.student)).size;
@@ -1663,3 +1690,4 @@ init();
 
 </body>
 </html>
+
